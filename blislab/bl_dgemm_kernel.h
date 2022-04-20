@@ -93,6 +93,15 @@ void bl_dgemm_ukr( int k,
         unsigned long long ldc,
         aux_t* data );
 
+void gemm_avx( int k,
+               int m,
+               int n,
+               const double * restrict a,
+               const double * restrict b,
+               double *c,
+               unsigned long long ldc,
+               aux_t* data);
+
 
 static void (*bl_micro_kernel) (
         int    k,
