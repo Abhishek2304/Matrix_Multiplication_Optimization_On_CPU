@@ -57,11 +57,11 @@ extern "C" {
 
 #if 1
  // #define DGEMM_KC 384
-#define DGEMM_KC 4
-#define DGEMM_MC 256
-#define DGEMM_NC 1024
-#define DGEMM_MR 64
-#define DGEMM_NR 64
+#define DGEMM_KC 8
+#define DGEMM_MC 512
+#define DGEMM_NC 8192
+#define DGEMM_MR 32
+#define DGEMM_NR 32
 #endif
 
 #define BL_MICRO_KERNEL bl_dgemm_ukr
