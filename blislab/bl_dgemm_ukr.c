@@ -150,6 +150,52 @@ void gemm_avx( int k,
     _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*0, c24_c25_c26_c27);
     _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*0, c34_c35_c36_c37);
 
+    register __m256d c40_c41_c42_c43 = _mm256_load_pd(c + 4*0 + ldc*4*1);
+    register __m256d c50_c51_c52_c53 = _mm256_load_pd(c + ldc + 4*0 + ldc*4*1);
+    register __m256d c60_c61_c62_c63 = _mm256_load_pd(c + 2*ldc + 4*0 + ldc*4*1);
+    register __m256d c70_c71_c72_c73 = _mm256_load_pd(c + 3*ldc + 4*0 + ldc*4*1);
+    register __m256d c44_c45_c46_c47 = _mm256_load_pd(c + 4*1 + ldc*4*1);
+    register __m256d c54_c55_c56_c57 = _mm256_load_pd(c + ldc + 4*1 + ldc*4*1);
+    register __m256d c64_c65_c66_c67 = _mm256_load_pd(c + 2*ldc + 4*1 + ldc*4*1);
+    register __m256d c74_c75_c76_c77 = _mm256_load_pd(c + 3*ldc + 4*1 + ldc*4*1);
+
+    for(int i = 0; i < k; i++){
+
+        register __m256d a0x = _mm256_broadcast_sd(&a[i*m + 4*1 + 0]);
+        register __m256d a1x = _mm256_broadcast_sd(&a[i*m + 4*1 + 1]);
+        register __m256d a2x = _mm256_broadcast_sd(&a[i*m + 4*1 + 2]);
+        register __m256d a3x = _mm256_broadcast_sd(&a[i*m + 4*1 + 3]);
+        
+        temp[0] = b[i*n + 4*0 + 0];
+        temp[1] = b[i*n + 4*0 + 1];
+        temp[2] = b[i*n + 4*0 + 2];
+        temp[3] = b[i*n + 4*0 + 3];
+        temp[4] = b[i*n + 4*1 + 0];
+        temp[5] = b[i*n + 4*1 + 1];
+        temp[6] = b[i*n + 4*1 + 2];
+        temp[7] = b[i*n + 4*1 + 3];
+        register __m256d matrix1 = _mm256_loadu_pd(&temp[0]);
+        register __m256d matrix2 = _mm256_loadu_pd(&temp[4]);
+
+        c40_c41_c42_c43 = _mm256_fmadd_pd(a0x, matrix1, c40_c41_c42_c43);
+        c50_c51_c52_c53 = _mm256_fmadd_pd(a1x, matrix1, c50_c51_c52_c53);
+        c60_c61_c62_c63 = _mm256_fmadd_pd(a2x, matrix1, c60_c61_c62_c63);
+        c70_c71_c72_c73 = _mm256_fmadd_pd(a3x, matrix1, c70_c71_c72_c73);
+        c44_c45_c46_c47 = _mm256_fmadd_pd(a0x, matrix2, c44_c45_c46_c47);
+        c54_c55_c56_c57 = _mm256_fmadd_pd(a1x, matrix2, c54_c55_c56_c57);
+        c64_c65_c66_c67 = _mm256_fmadd_pd(a2x, matrix2, c64_c65_c66_c67);
+        c74_c75_c76_c77 = _mm256_fmadd_pd(a3x, matrix2, c74_c75_c76_c77);
+    }
+
+    _mm256_store_pd(c + 4*0 + ldc*4*1, c40_c41_c42_c43);
+    _mm256_store_pd(c + ldc + 4*0 + ldc*4*1, c50_c51_c52_c53);
+    _mm256_store_pd(c + 2*ldc + 4*0+ ldc*4*1, c60_c61_c62_c63);
+    _mm256_store_pd(c + 3*ldc + 4*0 + ldc*4*1, c70_c71_c72_c73);
+    _mm256_store_pd(c + 4*1 + ldc*4*1, c44_c45_c46_c47);
+    _mm256_store_pd(c + ldc + 4*1 + ldc*4*1, c54_c55_c56_c57);
+    _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*1, c64_c65_c66_c67);
+    _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*1, c74_c75_c76_c77);
+
             
     // // 0,0
     // register __m256d c00_c01_c02_c03 = _mm256_load_pd(c + 4*0 + ldc*4*0);
@@ -272,163 +318,6 @@ void gemm_avx( int k,
     // _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*1, c20_c21_c22_c23);
     // _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*1, c30_c31_c32_c33);
 
-                
-                // ymm[4] = _mm256_mul_pd(ymm[0], matrix2);
-                // ymm[5] = _mm256_mul_pd(ymm[1], matrix2);
-                // ymm[6] = _mm256_mul_pd(ymm[2], matrix2);
-                // ymm[7] = _mm256_mul_pd(ymm[3], matrix2);
-
-                // _mm256_storeu_pd(&result[0], ymm[4]);
-                // _mm256_storeu_pd(&result[4], ymm[5]);
-                // _mm256_storeu_pd(&result[8], ymm[6]);
-                // _mm256_storeu_pd(&result[12], ymm[7]);
-
-                // c(4*e + 0,4*f + 0,ldc) += result[0];
-                // c(4*e + 0,4*f + 1,ldc) += result[1];
-                // c(4*e + 0,4*f + 2,ldc) += result[2];
-                // c(4*e + 0,4*f + 3,ldc) += result[3];
-                // c(4*e + 1,4*f + 0,ldc) += result[4];
-                // c(4*e + 1,4*f + 1,ldc) += result[5];
-                // c(4*e + 1,4*f + 2,ldc) += result[6];
-                // c(4*e + 1,4*f + 3,ldc) += result[7];
-                // c(4*e + 2,4*f + 0,ldc) += result[8];
-                // c(4*e + 2,4*f + 1,ldc) += result[9];
-                // c(4*e + 2,4*f + 2,ldc) += result[10];
-                // c(4*e + 2,4*f + 3,ldc) += result[11];
-                // c(4*e + 3,4*f + 0,ldc) += result[12];
-                // c(4*e + 3,4*f + 1,ldc) += result[13];
-                // c(4*e + 3,4*f + 2,ldc) += result[14];
-                // c(4*e + 3,4*f + 3,ldc) += result[15];
-
-        // ymm[0] = _mm256_broadcast_sd(&a[i*m+0]);
-        //         ymm[1] = _mm256_broadcast_sd(&a[i*m+1]);
-        //         ymm[2] = _mm256_broadcast_sd(&a[i*m+2]);
-        //         ymm[3] = _mm256_broadcast_sd(&a[i*m+3]);
-        //         ymm[4] = _mm256_broadcast_sd(&a[i*m+4]);
-        //         ymm[5] = _mm256_broadcast_sd(&a[i*m+5]);
-        //         ymm[6] = _mm256_broadcast_sd(&a[i*m+6]);
-        //         ymm[7] = _mm256_broadcast_sd(&a[i*m+7]);
-                
-        //         temp[0] = b[i*n + 0];
-        //         temp[1] = b[i*n + 1];
-        //         temp[2] = b[i*n + 2];
-        //         temp[3] = b[i*n + 3];
-        //         temp[4] = b[i*n + 4];
-        //         temp[5] = b[i*n + 5];
-        //         temp[6] = b[i*n + 6];
-        //         temp[7] = b[i*n + 7];
-        //         matrix2[0] = _mm256_loadu_pd(&temp[0]);
-        //         matrix2[1] = _mm256_loadu_pd(&temp[4]);
-                
-        //         ymm[8] = _mm256_mul_pd(ymm[0], matrix2[0]);
-        //         ymm[9] = _mm256_mul_pd(ymm[1], matrix2[0]);
-        //         ymm[10] = _mm256_mul_pd(ymm[2], matrix2[0]);
-        //         ymm[11] = _mm256_mul_pd(ymm[3], matrix2[0]);
-        //         ymm[12] = _mm256_mul_pd(ymm[4], matrix2[0]);
-        //         ymm[13] = _mm256_mul_pd(ymm[5], matrix2[0]);
-        //         ymm[14] = _mm256_mul_pd(ymm[6], matrix2[0]);
-        //         ymm[15] = _mm256_mul_pd(ymm[7], matrix2[0]);
-
-        //         _mm256_storeu_pd(&result[0], ymm[8]);
-        //         _mm256_storeu_pd(&result[4], ymm[9]);
-        //         _mm256_storeu_pd(&result[8], ymm[10]);
-        //         _mm256_storeu_pd(&result[12], ymm[11]);
-        //         _mm256_storeu_pd(&result[16], ymm[12]);
-        //         _mm256_storeu_pd(&result[20], ymm[13]);
-        //         _mm256_storeu_pd(&result[24], ymm[14]);
-        //         _mm256_storeu_pd(&result[28], ymm[15]);
-
-        //         c(0,0,ldc) += result[0];
-        //         c(0,1,ldc) += result[1];
-        //         c(0,2,ldc) += result[2];
-        //         c(0,3,ldc) += result[3];
-        //         c(1,0,ldc) += result[4];
-        //         c(1,1,ldc) += result[5];
-        //         c(1,2,ldc) += result[6];
-        //         c(1,3,ldc) += result[7];
-        //         c(2,0,ldc) += result[8];
-        //         c(2,1,ldc) += result[9];
-        //         c(2,2,ldc) += result[10];
-        //         c(2,3,ldc) += result[11];
-        //         c(3,0,ldc) += result[12];
-        //         c(3,1,ldc) += result[13];
-        //         c(3,2,ldc) += result[14];
-        //         c(3,3,ldc) += result[15];
-        //         c(4,0,ldc) += result[16];
-        //         c(4,1,ldc) += result[17];
-        //         c(4,2,ldc) += result[18];
-        //         c(4,3,ldc) += result[19];
-        //         c(5,0,ldc) += result[20];
-        //         c(5,1,ldc) += result[21];
-        //         c(5,2,ldc) += result[22];
-        //         c(5,3,ldc) += result[23];
-        //         c(6,0,ldc) += result[24];
-        //         c(6,1,ldc) += result[25];
-        //         c(6,2,ldc) += result[26];
-        //         c(6,3,ldc) += result[27];
-        //         c(7,0,ldc) += result[28];
-        //         c(7,1,ldc) += result[29];
-        //         c(7,2,ldc) += result[30];
-        //         c(7,3,ldc) += result[31];
-                
-        //         ymm[8] = _mm256_mul_pd(ymm[0], matrix2[1]);
-        //         ymm[9] = _mm256_mul_pd(ymm[1], matrix2[1]);
-        //         ymm[10] = _mm256_mul_pd(ymm[2], matrix2[1]);
-        //         ymm[11] = _mm256_mul_pd(ymm[3], matrix2[1]);
-        //         ymm[12] = _mm256_mul_pd(ymm[4], matrix2[1]);
-        //         ymm[13] = _mm256_mul_pd(ymm[5], matrix2[1]);
-        //         ymm[14] = _mm256_mul_pd(ymm[6], matrix2[1]);
-        //         ymm[15] = _mm256_mul_pd(ymm[7], matrix2[1]);
-
-        //         _mm256_storeu_pd(&result[0], ymm[8]);
-        //         _mm256_storeu_pd(&result[4], ymm[9]);
-        //         _mm256_storeu_pd(&result[8], ymm[10]);
-        //         _mm256_storeu_pd(&result[12], ymm[11]);
-        //         _mm256_storeu_pd(&result[16], ymm[12]);
-        //         _mm256_storeu_pd(&result[20], ymm[13]);
-        //         _mm256_storeu_pd(&result[24], ymm[14]);
-        //         _mm256_storeu_pd(&result[28], ymm[15]);
-
-        //         c(0,4,ldc) += result[0];
-        //         c(0,5,ldc) += result[1];
-        //         c(0,6,ldc) += result[2];
-        //         c(0,7,ldc) += result[3];
-        //         c(1,4,ldc) += result[4];
-        //         c(1,5,ldc) += result[5];
-        //         c(1,6,ldc) += result[6];
-        //         c(1,7,ldc) += result[7];
-        //         c(2,4,ldc) += result[8];
-        //         c(2,5,ldc) += result[9];
-        //         c(2,6,ldc) += result[10];
-        //         c(2,7,ldc) += result[11];
-        //         c(3,4,ldc) += result[12];
-        //         c(3,5,ldc) += result[13];
-        //         c(3,6,ldc) += result[14];
-        //         c(3,7,ldc) += result[15];
-        //         c(4,4,ldc) += result[16];
-        //         c(4,5,ldc) += result[17];
-        //         c(4,6,ldc) += result[18];
-        //         c(4,7,ldc) += result[19];
-        //         c(5,4,ldc) += result[20];
-        //         c(5,5,ldc) += result[21];
-        //         c(5,6,ldc) += result[22];
-        //         c(5,7,ldc) += result[23];
-        //         c(6,4,ldc) += result[24];
-        //         c(6,5,ldc) += result[25];
-        //         c(6,6,ldc) += result[26];
-        //         c(6,7,ldc) += result[27];
-        //         c(7,4,ldc) += result[28];
-        //         c(7,5,ldc) += result[29];
-        //         c(7,6,ldc) += result[30];
-        //         c(7,7,ldc) += result[31];
-
-    // for (int i = 0; i < 4; i++){
-    //     for (int j = 0; j < 4; j++){
-    //         printf("%d ", c(i,j,ldc));
-    //     }
-    //     printf("\n");
-    // }
-
     // TODO!!!: Do the 0 unpacking
     //ind = 0;
     // for(int i = 0; i < sizeof(res)/sizeof(res[0]); i++){
@@ -441,28 +330,4 @@ void gemm_avx( int k,
     // }
 
 }
-
-
-// static inline void gemm_avx (
-//     t_m4d *restrict dst,
-//     const t_m4d *restrict matrix1,
-//     const t_m4d *restrict matrix2)
-// {
-//     __m256d ymm[4];
-
-//     for (int i = 0; i < 4; i++){
-//         ymm[0] = _mm256_broadcast_sd(&matrix1->d[i][0]);
-//         ymm[1] = _mm256_broadcast_sd(&matrix1->d[i][1]);
-//         ymm[2] = _mm256_broadcast_sd(&matrix1->d[i][2]);
-//         ymm[3] = _mm256_broadcast_sd(&matrix1->d[i][3]);
-//         ymm[0] = _mm256_mul_pd(ymm[0], matrix2->m256d[0]);
-//         ymm[1] = _mm256_mul_pd(ymm[1], matrix2->m256d[1]);
-//         ymm[0] = _mm256_add_pd(ymm[0], ymm[1]);
-//         ymm[2] = _mm256_mul_pd(ymm[2], matrix2->m256d[2]);
-//         ymm[3] = _mm256_mul_pd(ymm[3], matrix2->m256d[3]);
-//         ymm[2] = _mm256_add_pd(ymm[2], ymm[3]);
-//         dst->m256d[i] = _mm256_add_pd(ymm[0], ymm[2]);
-//     }
-
-// }
 
