@@ -116,10 +116,6 @@ MY_OPT = "-O3"
 MY_OPT += "-march=core-avx2"
 MY_OPT += "-DOPENBLAS_SINGLETHREAD"
 
-## This is my part = REMOVE
-MY_OPT += "-mavx2"
-## Till here
-
 ifeq ($(debug), 1)
 	MY_OPT = "-O0"
 else
@@ -131,7 +127,8 @@ MY_OPT += "-DOPENBLAS_SINGLETHREAD"
 # MY_OPT = "-O3"
 # MY_OPT = "-O4"
 # If you want to change your optimization settings, do it here.
-
+MY_OPT += "-funroll-loops"
+MY_OPT += "-mavx2"
 # WARNINGS += -Wall -pedantic
 WARNINGS += -Wall 
 
