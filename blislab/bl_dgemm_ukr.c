@@ -18,29 +18,9 @@ void bl_dgemm_ukr( int    k, //Kc
                    aux_t* data )
 {
     int l, j, i;
-    //printf("%d, %d, %d, %d \n", (k, DGEMM_MR, n, ldc));
     for (l = 0; l<k; ++l){
-        // const double * restrict ak = &a[4*l];
-        // const double * restrict bk = &b[4*l];
-        // c[0*ldc + 0] += ak[0]*bk[0];
-        // c[0*ldc + 1] += ak[0]*bk[1];
-        // c[0*ldc + 2] += ak[0]*bk[2];
-        // c[0*ldc + 3] += ak[0]*bk[3];
-        // c[1*ldc + 0] += ak[1]*bk[0];
-        // c[1*ldc + 1] += ak[1]*bk[1];
-        // c[1*ldc + 2] += ak[1]*bk[2];
-        // c[1*ldc + 3] += ak[1]*bk[3];
-        // c[2*ldc + 0] += ak[2]*bk[0];
-        // c[2*ldc + 1] += ak[2]*bk[1];
-        // c[2*ldc + 2] += ak[2]*bk[2];
-        // c[2*ldc + 3] += ak[2]*bk[3];
-        // c[3*ldc + 0] += ak[3]*bk[0];
-        // c[3*ldc + 1] += ak[3]*bk[1];
-        // c[3*ldc + 2] += ak[3]*bk[2];
-        // c[3*ldc + 3] += ak[3]*bk[3];
         for (i = 0; i < m; ++i){
             for (j = 0; j < n; ++j){
-                //c[ldc*i + j] += a[l*m + i] * b[l*n + j];
                 c(i,j, ldc) += a(m, i, l) * b(n, j, l);
             }
         }
@@ -195,128 +175,6 @@ void gemm_avx( int k,
     _mm256_store_pd(c + ldc + 4*1 + ldc*4*1, c54_c55_c56_c57);
     _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*1, c64_c65_c66_c67);
     _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*1, c74_c75_c76_c77);
-
-            
-    // // 0,0
-    // register __m256d c00_c01_c02_c03 = _mm256_load_pd(c + 4*0 + ldc*4*0);
-    // register __m256d c10_c11_c12_c13 = _mm256_load_pd(c + ldc + 4*0 + ldc*4*0);
-    // register __m256d c20_c21_c22_c23 = _mm256_load_pd(c + 2*ldc + 4*0 + ldc*4*0);
-    // register __m256d c30_c31_c32_c33 = _mm256_load_pd(c + 3*ldc + 4*0 + ldc*4*0);
-
-    // for(int i = 0; i < k; i++){
-
-    //     register __m256d a0x = _mm256_broadcast_sd(&a[i*m + 4*0 + 0]);
-    //     register __m256d a1x = _mm256_broadcast_sd(&a[i*m + 4*0 + 1]);
-    //     register __m256d a2x = _mm256_broadcast_sd(&a[i*m + 4*0 + 2]);
-    //     register __m256d a3x = _mm256_broadcast_sd(&a[i*m + 4*0 + 3]);
-        
-    //     temp[0] = b[i*n + 4*0 + 0];
-    //     temp[1] = b[i*n + 4*0 + 1];
-    //     temp[2] = b[i*n + 4*0 + 2];
-    //     temp[3] = b[i*n + 4*0 + 3];
-    //     register __m256d matrix2 = _mm256_loadu_pd(&temp[0]);
-
-    //     c00_c01_c02_c03 = _mm256_fmadd_pd(a0x, matrix2, c00_c01_c02_c03);
-    //     c10_c11_c12_c13 = _mm256_fmadd_pd(a1x, matrix2, c10_c11_c12_c13);
-    //     c20_c21_c22_c23 = _mm256_fmadd_pd(a2x, matrix2, c20_c21_c22_c23);
-    //     c30_c31_c32_c33 = _mm256_fmadd_pd(a3x, matrix2, c30_c31_c32_c33);
-    // }
-
-    // _mm256_store_pd(c + 4*0 + ldc*4*0, c00_c01_c02_c03);
-    // _mm256_store_pd(c + ldc + 4*0 + ldc*4*0, c10_c11_c12_c13);
-    // _mm256_store_pd(c + 2*ldc + 4*0+ ldc*4*0, c20_c21_c22_c23);
-    // _mm256_store_pd(c + 3*ldc + 4*0 + ldc*4*0, c30_c31_c32_c33);
-
-    // //0,1
-    // c00_c01_c02_c03 = _mm256_load_pd(c + 4*1 + ldc*4*0);
-    // c10_c11_c12_c13 = _mm256_load_pd(c + ldc + 4*1 + ldc*4*0);
-    // c20_c21_c22_c23 = _mm256_load_pd(c + 2*ldc + 4*1 + ldc*4*0);
-    // c30_c31_c32_c33 = _mm256_load_pd(c + 3*ldc + 4*1 + ldc*4*0);
-
-    // for(int i = 0; i < k; i++){
-
-    //     register __m256d a0x = _mm256_broadcast_sd(&a[i*m + 4*0 + 0]);
-    //     register __m256d a1x = _mm256_broadcast_sd(&a[i*m + 4*0+ 1]);
-    //     register __m256d a2x = _mm256_broadcast_sd(&a[i*m + 4*0 + 2]);
-    //     register __m256d a3x = _mm256_broadcast_sd(&a[i*m + 4*0+ 3]);
-        
-    //     temp[0] = b[i*n + 4*1 + 0];
-    //     temp[1] = b[i*n + 4*1 + 1];
-    //     temp[2] = b[i*n + 4*1 + 2];
-    //     temp[3] = b[i*n + 4*1 + 3];
-    //     register __m256d matrix2 = _mm256_loadu_pd(&temp[0]);
-
-    //     c00_c01_c02_c03 = _mm256_fmadd_pd(a0x, matrix2, c00_c01_c02_c03);
-    //     c10_c11_c12_c13 = _mm256_fmadd_pd(a1x, matrix2, c10_c11_c12_c13);
-    //     c20_c21_c22_c23 = _mm256_fmadd_pd(a2x, matrix2, c20_c21_c22_c23);
-    //     c30_c31_c32_c33 = _mm256_fmadd_pd(a3x, matrix2, c30_c31_c32_c33);
-    // }
-
-    // _mm256_store_pd(c + 4*1 + ldc*4*0, c00_c01_c02_c03);
-    // _mm256_store_pd(c + ldc + 4*1 + ldc*4*0, c10_c11_c12_c13);
-    // _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*0, c20_c21_c22_c23);
-    // _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*0, c30_c31_c32_c33);
-
-    // //1,0
-    // c00_c01_c02_c03 = _mm256_load_pd(c + 4*0 + ldc*4*1);
-    // c10_c11_c12_c13 = _mm256_load_pd(c + ldc + 4*0 + ldc*4*1);
-    // c20_c21_c22_c23 = _mm256_load_pd(c + 2*ldc + 4*0 + ldc*4*1);
-    // c30_c31_c32_c33 = _mm256_load_pd(c + 3*ldc + 4*0 + ldc*4*1);
-
-    // for(int i = 0; i < k; i++){
-
-    //     register __m256d a0x = _mm256_broadcast_sd(&a[i*m + 4*1 + 0]);
-    //     register __m256d a1x = _mm256_broadcast_sd(&a[i*m + 4*1 + 1]);
-    //     register __m256d a2x = _mm256_broadcast_sd(&a[i*m + 4*1 + 2]);
-    //     register __m256d a3x = _mm256_broadcast_sd(&a[i*m + 4*1 + 3]);
-        
-    //     temp[0] = b[i*n + 4*0 + 0];
-    //     temp[1] = b[i*n + 4*0 + 1];
-    //     temp[2] = b[i*n + 4*0 + 2];
-    //     temp[3] = b[i*n + 4*0+ 3];
-    //     register __m256d matrix2 = _mm256_loadu_pd(&temp[0]);
-
-    //     c00_c01_c02_c03 = _mm256_fmadd_pd(a0x, matrix2, c00_c01_c02_c03);
-    //     c10_c11_c12_c13 = _mm256_fmadd_pd(a1x, matrix2, c10_c11_c12_c13);
-    //     c20_c21_c22_c23 = _mm256_fmadd_pd(a2x, matrix2, c20_c21_c22_c23);
-    //     c30_c31_c32_c33 = _mm256_fmadd_pd(a3x, matrix2, c30_c31_c32_c33);
-    // }
-
-    // _mm256_store_pd(c + 4*0 + ldc*4*1, c00_c01_c02_c03);
-    // _mm256_store_pd(c + ldc + 4*0 + ldc*4*1, c10_c11_c12_c13);
-    // _mm256_store_pd(c + 2*ldc + 4*0 + ldc*4*1, c20_c21_c22_c23);
-    // _mm256_store_pd(c + 3*ldc + 4*0 + ldc*4*1, c30_c31_c32_c33);
-
-    // //1,1
-
-    // c00_c01_c02_c03 = _mm256_load_pd(c + 4*1 + ldc*4*1);
-    // c10_c11_c12_c13 = _mm256_load_pd(c + ldc + 4*1 + ldc*4*1);
-    // c20_c21_c22_c23 = _mm256_load_pd(c + 2*ldc + 4*1 + ldc*4*1);
-    // c30_c31_c32_c33 = _mm256_load_pd(c + 3*ldc + 4*1 + ldc*4*1);
-
-    // for(int i = 0; i < k; i++){
-
-    //     register __m256d a0x = _mm256_broadcast_sd(&a[i*m + 4*1 + 0]);
-    //     register __m256d a1x = _mm256_broadcast_sd(&a[i*m + 4*1 + 1]);
-    //     register __m256d a2x = _mm256_broadcast_sd(&a[i*m + 4*1 + 2]);
-    //     register __m256d a3x = _mm256_broadcast_sd(&a[i*m + 4*1 + 3]);
-        
-    //     temp[0] = b[i*n + 4*1 + 0];
-    //     temp[1] = b[i*n + 4*1 + 1];
-    //     temp[2] = b[i*n + 4*1 + 2];
-    //     temp[3] = b[i*n + 4*1 + 3];
-    //     register __m256d matrix2 = _mm256_loadu_pd(&temp[0]);
-
-    //     c00_c01_c02_c03 = _mm256_fmadd_pd(a0x, matrix2, c00_c01_c02_c03);
-    //     c10_c11_c12_c13 = _mm256_fmadd_pd(a1x, matrix2, c10_c11_c12_c13);
-    //     c20_c21_c22_c23 = _mm256_fmadd_pd(a2x, matrix2, c20_c21_c22_c23);
-    //     c30_c31_c32_c33 = _mm256_fmadd_pd(a3x, matrix2, c30_c31_c32_c33);
-    // }
-
-    // _mm256_store_pd(c + 4*1 + ldc*4*1, c00_c01_c02_c03);
-    // _mm256_store_pd(c + ldc + 4*1 + ldc*4*1, c10_c11_c12_c13);
-    // _mm256_store_pd(c + 2*ldc + 4*1 + ldc*4*1, c20_c21_c22_c23);
-    // _mm256_store_pd(c + 3*ldc + 4*1 + ldc*4*1, c30_c31_c32_c33);
 
     // TODO!!!: Do the 0 unpacking
     //ind = 0;
