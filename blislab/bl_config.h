@@ -60,8 +60,8 @@ extern "C" {
 #define DGEMM_KC 64 // 8 - 8 GfPs
 #define DGEMM_MC 512
 #define DGEMM_NC 8192
-#define DGEMM_MR 8  // 64
-#define DGEMM_NR 4 // 64 - 8Gfps
+#define DGEMM_MR 4  // 64
+#define DGEMM_NR 8 // 64 - 8Gfps
 #endif
 
 #define BL_MICRO_KERNEL gemm_avx
