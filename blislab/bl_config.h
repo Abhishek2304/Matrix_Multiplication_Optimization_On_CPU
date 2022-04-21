@@ -57,14 +57,14 @@ extern "C" {
 
 #if 1
  // #define DGEMM_KC 384
-#define DGEMM_KC 8
+#define DGEMM_KC 64 // 8 - 8 GfPs
 #define DGEMM_MC 512
 #define DGEMM_NC 8192
-#define DGEMM_MR 32
-#define DGEMM_NR 32
+#define DGEMM_MR 8 // 64
+#define DGEMM_NR 8 // 64 - 8Gfps
 #endif
 
-#define BL_MICRO_KERNEL bl_dgemm_ukr
+#define BL_MICRO_KERNEL gemm_avx
 
 
 // End extern "C" construct block.
