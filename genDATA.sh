@@ -10,7 +10,7 @@ do
 	SUM=0
 	for i in {1..20}
 	do
-		OUTPUT=$(./benchmark-blas -n $size -g)
+		OUTPUT=$(./benchmark-blislab -n $size -g)
 		GFLOPS=$(echo $OUTPUT | awk '{print $2}')
 		SUM=$(awk '{print $1+$2}' <<<"${SUM} ${GFLOPS}")
 	done

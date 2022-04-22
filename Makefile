@@ -127,8 +127,10 @@ MY_OPT += "-DOPENBLAS_SINGLETHREAD"
 # MY_OPT = "-O3"
 # MY_OPT = "-O4"
 # If you want to change your optimization settings, do it here.
-# MY_OPT += "-funroll-loops"
-# MY_OPT += "-mavx2"
+MY_OPT += "-funroll-loops"
+#MY_OPT += "-mavx"
+MY_OPT += "-mavx2"
+#MY_OPT += "-mfma"
 # WARNINGS += -Wall -pedantic
 WARNINGS += -Wall 
 
