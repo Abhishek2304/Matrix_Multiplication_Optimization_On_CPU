@@ -183,23 +183,6 @@ void bl_macro_kernel(
 
   for ( i = 0; i < m; i += DGEMM_MR ) {                      // 2-th loop around micro-kernel
     for ( j = 0; j < n; j += DGEMM_NR ) {                    // 1-th loop around micro-kernel
-
-    // #if (DGEMM_MR != (m-i)) || (DGEMM_NR != (n-i))
-    //   bl_dgemm_ukr(
-    //         k,
-    //         min(m-i, DGEMM_MR),
-    //         min(n-j, DGEMM_NR),
-    //         // &packA[i * ldc],          // assumes sq matrix, otherwise use lda
-    //         // &packB[j],                // 
-
-    //         // what you should use after real packing routine implmemented
-    //         &packA[ i * k ],
-    //         &packB[ j * k ],
-    //         &C[ i * ldc + j ],
-    //         (unsigned long long) ldc,
-    //         &aux
-    //         );
-    // #else
       gemm_avx(
               k,
               min(m-i, DGEMM_MR),
@@ -213,8 +196,7 @@ void bl_macro_kernel(
               &C[ i * ldc + j ],
               (unsigned long long) ldc,
               &aux
-      );
-    //#endif                
+      );               
     }                                                        // 1-th loop around micro-kernel
   }                                                          // 2-th loop around micro-kernel
 }
