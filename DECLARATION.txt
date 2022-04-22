@@ -1,6 +1,6 @@
                 CSE 260 - SPRING 2022 - Assignment #1
                 University of California, San Diego
-                Computer Science and Eingeering Department
+                Computer Science and Engineering Department
 
 The undersigned declare that the work performed on this assignment was
 their own, and was carried out according to the Academic Integrity
@@ -9,5 +9,6 @@ https://sites.google.com/eng.ucsd.edu/cse260fall2020/academic-integrity
 
 Signed,
         Abhishek Gupta (abg006@ucsd.edu) [04/09/22]
-        John Doe (janedoe@ucsd.edu) [MM/DD/YY]
+        Sashank Vempati (svempati@ucsd.edu) [04/21/22]
 ------------------------------------------------
+
