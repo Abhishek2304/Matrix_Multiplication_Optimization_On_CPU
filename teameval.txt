@@ -13,7 +13,7 @@ If you worked alone leave column B blank
 
 (1) List the names of your team members:
 
-A:
+A: Abhishek Gupta
 
  
 B:
@@ -23,17 +23,18 @@ B:
 (2) Estimate how much time each team member devoted to this project, in HOURS.
 
   	                        A 	       B
-meetings 	  	  	 
-coding 	  	  	 
-writeup 	  	  	 
-planning (alone) 	  	  	 
-total (including meetings) 	  	  	 
+meetings 	  	  	        2          
+coding 	  	  	            6        
+writeup 	  	  	        4
+planning (alone) 	  	  	16 
+total (including meetings) 	28 	  	 
 
 
 (3) Discuss the following.
 (a) If you worked in a team, what were the major responsibilities
     of each team member?
 (b) Did you complete the assignment?
+Ans - Yes
 (c) What were your major strengths and weaknesses in doing this
     assignment (individually or in a team)?
     If in a team, also discuss how your team worked together.

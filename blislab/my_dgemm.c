@@ -93,8 +93,13 @@ void packA_mcxkc_d(
 {
   int packA_idx = 0;
   for (int col = 0; col < k; col++){
-    for (int row = 0; row < m; row++){
-      *(packA + packA_idx) = *(XA + row*ldXA + col);
+    for (int row = 0; row < DGEMM_MR; row++){
+      if (row < m){
+        *(packA + packA_idx) = *(XA + row*ldXA + col);
+      }
+      else{
+        *(packA + packA_idx) = 0.0;
+      }
       packA_idx++;
     }
   }
@@ -145,8 +150,13 @@ void packB_kcxnc_d(
 {
   int packB_idx = 0;
   for (int row = 0; row < k; row++){
-    for (int col = 0; col < n; col++){
-      *(packB + packB_idx) = *(XB + row*ldXB + col);
+    for (int col = 0; col < DGEMM_NR; col++){
+      if (col < n){
+        *(packB + packB_idx) = *(XB + row*ldXB + col);
+      }
+      else{
+        *(packB + packB_idx) = 0.0;
+      }
       packB_idx++;
     }
   }
@@ -173,7 +183,25 @@ void bl_macro_kernel(
 
   for ( i = 0; i < m; i += DGEMM_MR ) {                      // 2-th loop around micro-kernel
     for ( j = 0; j < n; j += DGEMM_NR ) {                    // 1-th loop around micro-kernel
-      ( *bl_micro_kernel ) (
+      // if (((m-i) < DGEMM_MR) || ((n-j) < DGEMM_NR)){
+      //     bl_dgemm_ukr(
+      //           k,
+      //           min(m-i, DGEMM_MR),
+      //           min(n-j, DGEMM_NR),
+      //           // &packA[i * ldc],          // assumes sq matrix, otherwise use lda
+      //           // &packB[j],                // 
+
+      //           // what you should use after real packing routine implmemented
+      //           &packA[ i * k ],
+      //           &packB[ j * k ],
+      //           &C[ i * ldc + j ],
+      //           (unsigned long long) ldc,
+      //           &aux
+      //           );
+      // }
+      // else {
+        //bl_dgemm_ukr(
+        gemm_avx(
                 k,
                 min(m-i, DGEMM_MR),
                 min(n-j, DGEMM_NR),
@@ -186,7 +214,9 @@ void bl_macro_kernel(
                 &C[ i * ldc + j ],
                 (unsigned long long) ldc,
                 &aux
-                );
+        );
+      //}               
+      
     }                                                        // 1-th loop around micro-kernel
   }                                                          // 2-th loop around micro-kernel
 }
