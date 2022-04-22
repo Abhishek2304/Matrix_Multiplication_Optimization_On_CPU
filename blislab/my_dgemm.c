@@ -91,6 +91,18 @@ void packA_mcxkc_d(
         double *packA
         )
 {
+  int packA_idx = 0;
+  for (int col = 0; col < k; col++){
+    for (int row = 0; row < DGEMM_MR; row++){
+      if (row < m){
+        *(packA + packA_idx) = *(XA + row*ldXA + col);
+      }
+      else{
+        *(packA + packA_idx) = 0.0;
+      }
+      packA_idx++;
+    }
+  }
 }
 
 
@@ -136,6 +148,18 @@ void packB_kcxnc_d(
         double *packB
         )
 {
+  int packB_idx = 0;
+  for (int row = 0; row < k; row++){
+    for (int col = 0; col < DGEMM_NR; col++){
+      if (col < n){
+        *(packB + packB_idx) = *(XB + row*ldXB + col);
+      }
+      else{
+        *(packB + packB_idx) = 0.0;
+      }
+      packB_idx++;
+    }
+  }
 }
 
 /*
@@ -154,27 +178,28 @@ void bl_macro_kernel(
         int    ldc
         )
 {
-    int    i, j;
-    aux_t  aux;
+  int    i, j;
+  aux_t  aux;
 
-    for ( i = 0; i < m; i += DGEMM_MR ) {                      // 2-th loop around micro-kernel
-      for ( j = 0; j < n; j += DGEMM_NR ) {                    // 1-th loop around micro-kernel
-	( *bl_micro_kernel ) (
-			      k,
-			      min(m-i, DGEMM_MR),
-			      min(n-j, DGEMM_NR),
-			      &packA[i * ldc],          // assumes sq matrix, otherwise use lda
-			      &packB[j],                // 
+  for ( i = 0; i < m; i += DGEMM_MR ) {                      // 2-th loop around micro-kernel
+    for ( j = 0; j < n; j += DGEMM_NR ) {                    // 1-th loop around micro-kernel
 
-			      // what you should use after real packing routine implmemented
-			      //			      &packA[ i * k ],
-			      //			      &packB[ j * k ],
-			      &C[ i * ldc + j ],
-			      (unsigned long long) ldc,
-			      &aux
-			      );
-      }                                                        // 1-th loop around micro-kernel
-    }                                                          // 2-th loop around micro-kernel
+      (*bl_micro_kernel)(
+              k,
+              min(m-i, DGEMM_MR),
+              min(n-j, DGEMM_NR),
+              // &packA[i * ldc],          // assumes sq matrix, otherwise use lda
+              // &packB[j],                // 
+
+              // what you should use after real packing routine implmemented
+              &packA[ i * k ],
+              &packB[ j * k ],
+              &C[ i * ldc + j ],
+              (unsigned long long) ldc,
+              &aux
+      );               
+    }                                                        // 1-th loop around micro-kernel
+  }                                                          // 2-th loop around micro-kernel
 }
 
 void bl_dgemm(
@@ -196,59 +221,58 @@ void bl_dgemm(
   // 
   // FIXME undef NOPACK when you implement packing
   //
-#define NOPACK
+//#define NOPACK
 #ifndef NOPACK
-  packA  = bl_malloc_aligned( DGEMM_KC, ( DGEMM_MC/DGEMM_MR + 1 )* DGEMM_MR, sizeof(double) );
+  packA  = bl_malloc_aligned( ( DGEMM_MC/DGEMM_MR + 1 )* DGEMM_MR, DGEMM_KC , sizeof(double) );  // Basically of Mc x Kc, with Mr blocks
   packB  = bl_malloc_aligned( DGEMM_KC, ( DGEMM_NC/DGEMM_NR + 1 )* DGEMM_NR, sizeof(double) );
 #endif
   for ( ic = 0; ic < m; ic += DGEMM_MC ) {              // 5-th loop around micro-kernel
-      ib = min( m - ic, DGEMM_MC );
-      for ( pc = 0; pc < k; pc += DGEMM_KC ) {          // 4-th loop around micro-kernel
-	pb = min( k - pc, DGEMM_KC );
-	
+    ib = min( m - ic, DGEMM_MC );                      // ib is Mc. TODO: Not implemented for non blocks kernel
+    for ( pc = 0; pc < k; pc += DGEMM_KC ) {          // 4-th loop around micro-kernel
+	    pb = min( k - pc, DGEMM_KC );                     // pb is Kc. TODO: Not implemented for non blocks kernel	
 
 #ifdef NOPACK
-	packA = &XA[pc + ic * lda ];
+	    packA = &XA[pc + ic * lda ];
 #else
-	int    i, j;
-	for ( i = 0; i < ib; i += DGEMM_MR ) {
-	  packA_mcxkc_d(
-			min( ib - i, DGEMM_MR ), /* m */
-			pb,                      /* k */
-			&XA[ pc + lda*(ic + i)], /* XA - start of micropanel in A */
-			k,                       /* ldXA */
-			&packA[ 0 * DGEMM_MC * pb + i * pb ] /* packA */);
-	  
-	}
+      int    i, j;
+      for ( i = 0; i < ib; i += DGEMM_MR ) {
+        packA_mcxkc_d(
+          min( ib - i, DGEMM_MR ), /* m */
+          pb,                      /* k */
+          &XA[ pc + lda*(ic + i)], /* XA - start of micropanel in A */
+          k,                       /* ldXA */
+          &packA[ 0 * DGEMM_MC * pb + i * pb ] /* packA */);
+        
+      }
 #endif
-	for ( jc = 0; jc < n; jc += DGEMM_NC ) {        // 3-rd loop around micro-kernel
-	  jb = min( m - jc, DGEMM_NC );
+      for ( jc = 0; jc < n; jc += DGEMM_NC ) {        // 3-rd loop around micro-kernel
+        jb = min( m - jc, DGEMM_NC );                //Jb is Nc
 
 #ifdef NOPACK
-	  packB = &XB[ldb * pc + jc ];
+	      packB = &XB[ldb * pc + jc ];
 #else
-	  for ( j = 0; j < jb; j += DGEMM_NR ) {
-	    packB_kcxnc_d(
-			  min( jb - j, DGEMM_NR ) /* n */,
-			  pb                      /* k */,
-			  &XB[ ldb * pc + jc + j]     /* XB - starting row and column for this panel */,
-			  n, // should be ldXB instead /* ldXB */
-			  &packB[ j * pb ]        /* packB */
-			  );
-	  }
+        for ( j = 0; j < jb; j += DGEMM_NR ) {
+          packB_kcxnc_d(
+            min( jb - j, DGEMM_NR ) /* n */,
+            pb                      /* k */,
+            &XB[ ldb * pc + jc + j]     /* XB - starting row and column for this panel */,
+            n, // should be ldXB instead /* ldXB */
+            &packB[ j * pb ]        /* packB */
+            );
+        }
 #endif
 
-	  bl_macro_kernel(
-			  ib,
-			  jb,
-			  pb,
-			  packA,
-			  packB,
-			  &C[ ic * ldc + jc ], 
-			  ldc
-			  );
-	}                                               // End 3.rd loop around micro-kernel
-      }                                                 // End 4.th loop around micro-kernel
+        bl_macro_kernel(
+            ib,
+            jb,
+            pb,
+            packA,
+            packB,
+            &C[ ic * ldc + jc ], 
+            ldc
+            );
+	    }                                               // End 3.rd loop around micro-kernel
+    }                                                 // End 4.th loop around micro-kernel
   }                                                     // End 5.th loop around micro-kernel
   
 #ifndef NOPACK

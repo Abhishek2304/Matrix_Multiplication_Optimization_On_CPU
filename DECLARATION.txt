@@ -1,6 +1,6 @@
-                CSE 260 - FALL 2020 - Assignment #1
+                CSE 260 - SPRING 2022 - Assignment #1
                 University of California, San Diego
-                Computer Science and Eingeering Department
+                Computer Science and Engineering Department
 
 The undersigned declare that the work performed on this assignment was
 their own, and was carried out according to the Academic Integrity
@@ -8,11 +8,7 @@ policies in effect for this course:
 https://sites.google.com/eng.ucsd.edu/cse260fall2020/academic-integrity
 
 Signed,
-        Jane Doe (janedoe@ucsd.edu) [MM/DD/YY]
-        John Doe (janedoe@ucsd.edu) [MM/DD/YY]
+        Abhishek Gupta (abg006@ucsd.edu) [04/09/22]
+        Sashank Vempati (svempati@ucsd.edu) [04/21/22]
 ------------------------------------------------
-Instructions:
-Insert your name(s), email address(s), and date signed.
-Cut everything below the dotted line
-If you do not include this in your assignment turn in, the assignment will
-not be graded, and will be treated as a late assignment
+

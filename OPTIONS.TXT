@@ -1,0 +1,2 @@
+MY_OPT="-mavx2"
+MY_OPT+="-funroll-loops"

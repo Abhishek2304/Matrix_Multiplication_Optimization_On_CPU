@@ -13,32 +13,75 @@ If you worked alone leave column B blank
 
 (1) List the names of your team members:
 
-A:
+A: Abhishek Gupta
 
  
-B:
+B: Sashank Vempati
 
  
  
 (2) Estimate how much time each team member devoted to this project, in HOURS.
 
   	                        A 	       B
-meetings 	  	  	 
-coding 	  	  	 
-writeup 	  	  	 
-planning (alone) 	  	  	 
-total (including meetings) 	  	  	 
+meetings 	  	  	2	       2
+coding 	  	  	 	6              7
+writeup 	  	  	4              3
+planning (alone) 	  	16  	       4 
+total (including meetings) 	28  	       16	 
 
 
 (3) Discuss the following.
 (a) If you worked in a team, what were the major responsibilities
     of each team member?
+
+    Abhishek was responsible for writing the packing routines and tuning
+    the parameters, and Sashank was responsible for implementing the 
+    AVX2 based microkernel and use intrinsics to optimize code with vectorization.
+    Abhishek also debugged the microkernel based on the packing routines implemented.
+    
 (b) Did you complete the assignment?
+
+    Yes
+
 (c) What were your major strengths and weaknesses in doing this
     assignment (individually or in a team)?
     If in a team, also discuss how your team worked together.
+
+    Our team had short meetings in person to discuss the layout of the project
+    and responsibilities during the planning phase of the project, and debugging
+    code and implementing new optimizations during the coding phase of the project.
+
+    Some of our strengths are that we were able to have good communication and 
+    meetings that were short, to the point, and productive. We were also able to 
+    help each other out whenever there is a bottleneck that is when debugging code.
+    Some of our weaknesses are that after coming up with a new optimization technique 
+    for the packing routine, it was very challenging to change the AVX2 operations when we 
+    changed the size of the microkernel due to its complexity.
+
 (d) What  lessons did you learn from these events.
+
+    Communication is very crucial, being organized such as setting deadlines for different
+    phases of the project (planning phase, coding phase, debugging phase, etc.), and having
+    a platform where you can update each other and send useful resources relating to the project
+    will save a lot of time and will be more effective in learning the concepts from the project.
+
 (e) If in a team, whether and how you plan to change the way
-    your work together .
+    your work together.
+
+    Updating about each other's progress more often, setting stricter deadlines between the 
+    different parts of the project, and dedicating a certain date and time to meet was something
+    we would change so that we would be able to resolve any potential issues (whether debugging
+    or conceptual) as soon as possible.
+
 (f) Anything else that comes to mind.
+
 (g) What suggestions do you have to improve this assignment?
+
+    One suggestion to improve this assignment is to do a walkthrough of an example of
+    multiplying two matrices with real values and how it is done using packing and the
+    microkernel (where we can keep track of all the parameter values), I think this will
+    help a lot in understanding this algorithm.
+
+    Also, having a basic introduction to the avx intrinsic variables and functions with
+    some examples would be very helpful in understanding how to use them for optimization.
+    
