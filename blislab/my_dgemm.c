@@ -183,7 +183,8 @@ void bl_macro_kernel(
 
   for ( i = 0; i < m; i += DGEMM_MR ) {                      // 2-th loop around micro-kernel
     for ( j = 0; j < n; j += DGEMM_NR ) {                    // 1-th loop around micro-kernel
-      gemm_avx(
+
+      (*bl_micro_kernel)(
               k,
               min(m-i, DGEMM_MR),
               min(n-j, DGEMM_NR),
