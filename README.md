@@ -8,4 +8,4 @@ with some modifications by Bryan Chin at UC San Diego<br />
 
 Optimized code is in the blislab folder. <br />
 To make the program, use: <br />
-`make  "`cat OPTIONS.TXT`" benchmark-blislab`
+`make  "cat OPTIONS.TXT" benchmark-blislab`
